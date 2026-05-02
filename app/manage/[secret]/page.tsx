@@ -16,7 +16,7 @@ export default async function ManagePage({ params }: Props) {
     <main className="min-h-screen bg-[#0c0c0c]">
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
-      <div className="px-5 pt-10 pb-6 max-w-7xl mx-auto flex items-end justify-between flex-wrap gap-4">
+      <div className="px-4 pt-10 pb-6 flex items-end justify-between flex-wrap gap-4">
         <div>
           <div className="flex items-center gap-3 mb-1">
             <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
@@ -36,9 +36,9 @@ export default async function ManagePage({ params }: Props) {
         </Link>
       </div>
 
-      <div className="mx-5 max-w-7xl border-t border-zinc-800/60 mb-6" />
+      <div className="mx-4 border-t border-zinc-800/60 mb-6" />
 
-      <div className="px-4 pb-20 max-w-7xl mx-auto">
+      <div className="px-3 pb-20">
         {photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-40 text-zinc-700">
             <p className="text-sm tracking-wide">No photos yet</p>
