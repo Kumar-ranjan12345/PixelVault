@@ -1,11 +1,18 @@
 import { NextRequest, NextResponse } from "next/server";
-import { imagekit } from "@/lib/imagekit";
+import ImageKit from "imagekit";
 
 const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "image/gif"];
 
+function getImageKit() {
+  return new ImageKit({
+    publicKey: process.env.NEXT_PUBLIC_IMAGEKIT_PUBLIC_KEY!,
+    privateKey: process.env.IMAGEKIT_PRIVATE_KEY!,
+    urlEndpoint: process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT!,
+  });
+}
+
 export async function POST(req: NextRequest) {
-  // Verify secret
   const secret = req.nextUrl.searchParams.get("secret");
   if (secret !== process.env.UPLOAD_SECRET) {
     return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
@@ -18,6 +25,7 @@ export async function POST(req: NextRequest) {
     return NextResponse.json({ error: "No files provided" }, { status: 400 });
   }
 
+  const ik = getImageKit();
   const results = [];
 
   for (const file of files) {
@@ -34,20 +42,14 @@ export async function POST(req: NextRequest) {
       const buffer = Buffer.from(await file.arrayBuffer());
       const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
 
-      // Upload to ImageKit — thumbnails are generated on-the-fly via URL transforms
-      const response = await imagekit.upload({
+      const response = await ik.upload({
         file: buffer,
         fileName: safeName,
         folder: "/gallery",
         useUniqueFileName: false,
       });
 
-      results.push({
-        name: file.name,
-        fileId: response.fileId,
-        url: response.url,
-        success: true,
-      });
+      results.push({ name: file.name, fileId: response.fileId, url: response.url, success: true });
     } catch (err) {
       results.push({ name: file.name, error: "Upload failed" });
       console.error(err);
