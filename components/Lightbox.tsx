@@ -1,7 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import type { Photo } from "@/lib/r2";
+import type { Photo } from "@/lib/imagekit";
 
 interface Props {
   photo: Photo;

@@ -1,7 +1,7 @@
 "use client";
 
 import { useState } from "react";
-import type { Photo } from "@/lib/r2";
+import type { Photo } from "@/lib/imagekit";
 import Lightbox from "./Lightbox";
 
 export default function GalleryGrid({ photos, isDemo = false }: { photos: Photo[]; isDemo?: boolean }) {
