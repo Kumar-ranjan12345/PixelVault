@@ -10,16 +10,16 @@ export default async function GalleryPage() {
     <main className="min-h-screen bg-[#0c0c0c]">
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
-      <div className="px-4 pt-10 pb-6">
+      <div className="px-6 sm:px-12 pt-10 pb-6">
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
           Gallery
         </h1>
         <p className="text-zinc-500 text-sm mt-2">{photos.length} photos</p>
       </div>
 
-      <div className="mx-4 border-t border-zinc-800/60 mb-6" />
+      <div className="mx-6 sm:mx-12 border-t border-zinc-800/60 mb-6" />
 
-      <div className="px-3 pb-20">
+      <div className="px-4 sm:px-10 pb-20">
         {photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-40 text-zinc-700">
             <svg className="w-12 h-12 mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">

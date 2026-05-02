@@ -80,21 +80,24 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
         <div className="flex items-center gap-2">
 
           {/* Download */}
-          <button
-            onClick={handleDownload}
-            disabled={downloading}
-            className="flex items-center gap-2 bg-white text-black text-sm font-medium px-4 py-2 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-50"
-          >
-            {downloading ? (
-              <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-            ) : (
-              <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                  d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-              </svg>
-            )}
-            Download
-          </button>
+          {/* Download — owner only */}
+          {isOwner && (
+            <button
+              onClick={handleDownload}
+              disabled={downloading}
+              className="flex items-center gap-2 bg-white text-black text-sm font-medium px-4 py-2 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-50"
+            >
+              {downloading ? (
+                <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
+                </svg>
+              )}
+              Download
+            </button>
+          )}
 
           {/* Delete (owner only) */}
           {isOwner && (
