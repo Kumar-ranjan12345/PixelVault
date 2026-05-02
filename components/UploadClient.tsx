@@ -19,7 +19,12 @@ export default function UploadClient({ secret }: { secret: string }) {
 
   function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
     if (e.target.files) {
-      setFiles(Array.from(e.target.files));
+      // Accumulate files instead of replacing — allows multiple selections on iOS
+      setFiles(prev => {
+        const existing = new Set(prev.map(f => f.name + f.size));
+        const newFiles = Array.from(e.target.files!).filter(f => !existing.has(f.name + f.size));
+        return [...prev, ...newFiles];
+      });
       setResults([]);
       setApiError(null);
     }
@@ -118,18 +123,38 @@ export default function UploadClient({ secret }: { secret: string }) {
 
         {/* Selected previews */}
         {files.length > 0 && (
-          <div className="mt-4 grid grid-cols-4 gap-2">
-            {files.slice(0, 8).map((f, i) => (
-              <div key={i} className="aspect-square rounded-lg overflow-hidden bg-zinc-900">
-                {/* eslint-disable-next-line @next/next/no-img-element */}
-                <img src={URL.createObjectURL(f)} alt={f.name} className="w-full h-full object-cover" />
-              </div>
-            ))}
-            {files.length > 8 && (
-              <div className="aspect-square rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500 text-sm">
-                +{files.length - 8}
-              </div>
-            )}
+          <div className="mt-4">
+            <div className="grid grid-cols-4 gap-2">
+              {files.slice(0, 8).map((f, i) => (
+                <div key={i} className="aspect-square rounded-lg overflow-hidden bg-zinc-900 relative group">
+                  {/* eslint-disable-next-line @next/next/no-img-element */}
+                  <img src={URL.createObjectURL(f)} alt={f.name} className="w-full h-full object-cover" />
+                  <button
+                    onClick={() => setFiles(files.filter((_, idx) => idx !== i))}
+                    className="absolute top-1 right-1 w-5 h-5 bg-black/70 rounded-full text-white text-xs opacity-0 group-hover:opacity-100 transition-opacity flex items-center justify-center"
+                  >✕</button>
+                </div>
+              ))}
+              {files.length > 8 && (
+                <div className="aspect-square rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500 text-sm">
+                  +{files.length - 8}
+                </div>
+              )}
+            </div>
+            <div className="flex items-center justify-between mt-2">
+              <button
+                onClick={() => inputRef.current?.click()}
+                className="text-zinc-500 hover:text-white text-xs transition-colors"
+              >
+                + Add more
+              </button>
+              <button
+                onClick={() => { setFiles([]); setResults([]); setApiError(null); }}
+                className="text-zinc-600 hover:text-red-400 text-xs transition-colors"
+              >
+                Clear all
+              </button>
+            </div>
           </div>
         )}
 
