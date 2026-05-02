@@ -13,11 +13,6 @@ function getImageKit() {
 }
 
 export async function POST(req: NextRequest) {
-  const secret = req.nextUrl.searchParams.get("secret");
-  if (secret !== process.env.UPLOAD_SECRET) {
-    return NextResponse.json({ error: "Unauthorized" }, { status: 401 });
-  }
-
   const formData = await req.formData();
   const files = formData.getAll("files") as File[];
 
