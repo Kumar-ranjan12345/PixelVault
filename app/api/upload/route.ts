@@ -22,8 +22,11 @@ export async function POST(req: NextRequest) {
 
   const ik = getImageKit();
   const results = [];
+  const now = new Date();
+  const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  for (const file of files) {
+  for (let i = 0; i < files.length; i++) {
+    const file = files[i];
     if (!ALLOWED_TYPES.includes(file.type)) {
       results.push({ name: file.name, error: "Unsupported file type" });
       continue;
@@ -35,7 +38,8 @@ export async function POST(req: NextRequest) {
 
     try {
       const buffer = Buffer.from(await file.arrayBuffer());
-      const safeName = `${Date.now()}-${file.name.replace(/[^a-zA-Z0-9._-]/g, "_")}`;
+      const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
+      const safeName = `${dateStr}-IMG_${i + 1}.${ext}`;
 
       const response = await ik.upload({
         file: buffer,
