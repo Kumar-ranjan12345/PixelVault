@@ -25,6 +25,9 @@ export async function POST(req: NextRequest) {
   const now = new Date();
   const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
+  // Count existing photos to continue numbering from where we left off
+  const existing = await ik.listFiles({ path: "/gallery", fileType: "image", limit: 1000 });
+  const startIndex = (existing as any[]).length + 1;
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
     if (!ALLOWED_TYPES.includes(file.type)) {
@@ -39,7 +42,7 @@ export async function POST(req: NextRequest) {
     try {
       const buffer = Buffer.from(await file.arrayBuffer());
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const safeName = `${dateStr}-IMG_${i + 1}.${ext}`;
+      const safeName = `${dateStr}-IMG_${startIndex + i}.${ext}`;
 
       const response = await ik.upload({
         file: buffer,
