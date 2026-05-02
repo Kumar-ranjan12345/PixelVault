@@ -4,7 +4,8 @@ import { useState } from "react";
 import type { Photo } from "@/lib/imagekit";
 import Lightbox from "./Lightbox";
 
-export default function GalleryGrid({ photos }: { photos: Photo[] }) {
+export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: { photos: Photo[]; isOwner?: boolean }) {
+  const [photos, setPhotos] = useState(initialPhotos);
   const [selected, setSelected] = useState<Photo | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -25,6 +26,18 @@ export default function GalleryGrid({ photos }: { photos: Photo[] }) {
     setSelectedIndex(i);
   }
 
+  function onDeleted(key: string) {
+    const updated = photos.filter(p => p.key !== key);
+    setPhotos(updated);
+    if (updated.length === 0) {
+      setSelected(null);
+    } else {
+      const newIndex = Math.min(selectedIndex, updated.length - 1);
+      setSelected(updated[newIndex]);
+      setSelectedIndex(newIndex);
+    }
+  }
+
   return (
     <>
       <div className="masonry">
@@ -42,7 +55,6 @@ export default function GalleryGrid({ photos }: { photos: Photo[] }) {
               className="photo-img w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
               onLoad={(e) => e.currentTarget.classList.add("loaded")}
             />
-            {/* Hover overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
               <p className="text-white/80 text-xs truncate font-light tracking-wide">{photo.name}</p>
             </div>
@@ -58,6 +70,8 @@ export default function GalleryGrid({ photos }: { photos: Photo[] }) {
           onNext={next}
           hasPrev={photos.length > 1}
           hasNext={photos.length > 1}
+          isOwner={isOwner}
+          onDeleted={onDeleted}
         />
       )}
     </>

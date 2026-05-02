@@ -1,17 +1,15 @@
 import { listPhotos } from "@/lib/imagekit";
 import GalleryGrid from "@/components/GalleryGrid";
 
-export const revalidate = 60; // refresh every 60s
+export const revalidate = 0;
 
 export default async function GalleryPage() {
-  let photos = await listPhotos().catch(() => []);
+  const photos = await listPhotos().catch(() => []);
 
   return (
     <main className="min-h-screen bg-[#0c0c0c]">
-      {/* Top accent line */}
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
-      {/* Header */}
       <div className="px-5 pt-10 pb-6 max-w-7xl mx-auto">
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
           Gallery
@@ -19,10 +17,8 @@ export default async function GalleryPage() {
         <p className="text-zinc-500 text-sm mt-2">{photos.length} photos</p>
       </div>
 
-      {/* Divider */}
       <div className="mx-5 max-w-7xl border-t border-zinc-800/60 mb-6" />
 
-      {/* Grid */}
       <div className="px-4 pb-20 max-w-7xl mx-auto">
         {photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-40 text-zinc-700">
@@ -33,11 +29,10 @@ export default async function GalleryPage() {
             <p className="text-sm tracking-wide">No photos yet</p>
           </div>
         ) : (
-          <GalleryGrid photos={photos} />
+          <GalleryGrid photos={photos} isOwner={false} />
         )}
       </div>
 
-      {/* Footer */}
       <div className="text-center pb-8 text-zinc-700 text-xs tracking-widest uppercase">
         {photos.length} photos
       </div>

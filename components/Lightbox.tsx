@@ -10,25 +10,32 @@ interface Props {
   onNext: () => void;
   hasPrev: boolean;
   hasNext: boolean;
+  isOwner?: boolean;
+  onDeleted?: (key: string) => void;
 }
 
-export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext }: Props) {
+export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext, isOwner, onDeleted }: Props) {
   const [downloading, setDownloading] = useState(false);
+  const [deleting, setDeleting] = useState(false);
+  const [confirmDelete, setConfirmDelete] = useState(false);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
-      if (e.key === "Escape") onClose();
-      if (e.key === "ArrowLeft") onPrev();
-      if (e.key === "ArrowRight") onNext();
+      if (e.key === "Escape") { setConfirmDelete(false); onClose(); }
+      if (e.key === "ArrowLeft" && !confirmDelete) onPrev();
+      if (e.key === "ArrowRight" && !confirmDelete) onNext();
     }
     window.addEventListener("keydown", onKey);
     return () => window.removeEventListener("keydown", onKey);
-  }, [onClose, onPrev, onNext]);
+  }, [onClose, onPrev, onNext, confirmDelete]);
 
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
   }, []);
+
+  // Reset confirm when photo changes
+  useEffect(() => { setConfirmDelete(false); }, [photo.key]);
 
   async function handleDownload() {
     setDownloading(true);
@@ -46,15 +53,33 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
     }
   }
 
+  async function handleDelete() {
+    if (!confirmDelete) { setConfirmDelete(true); return; }
+    setDeleting(true);
+    try {
+      await fetch("/api/delete", {
+        method: "DELETE",
+        headers: { "Content-Type": "application/json" },
+        body: JSON.stringify({ fileId: photo.key }),
+      });
+      onDeleted?.(photo.key);
+    } finally {
+      setDeleting(false);
+      setConfirmDelete(false);
+    }
+  }
+
   return (
     <div
       className="lightbox-overlay fixed inset-0 z-50 bg-black/95 flex flex-col"
-      onClick={(e) => e.target === e.currentTarget && onClose()}
+      onClick={(e) => { if (e.target === e.currentTarget) { setConfirmDelete(false); onClose(); } }}
     >
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
         <p className="text-zinc-400 text-sm truncate max-w-xs">{photo.name}</p>
-        <div className="flex items-center gap-3">
+        <div className="flex items-center gap-2">
+
+          {/* Download */}
           <button
             onClick={handleDownload}
             disabled={downloading}
@@ -70,7 +95,42 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
             )}
             Download
           </button>
-          <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors p-1">
+
+          {/* Delete (owner only) */}
+          {isOwner && (
+            <button
+              onClick={handleDelete}
+              disabled={deleting}
+              className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full transition-colors disabled:opacity-50 ${
+                confirmDelete
+                  ? "bg-red-600 text-white hover:bg-red-700"
+                  : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+              }`}
+            >
+              {deleting ? (
+                <span className="w-4 h-4 border-2 border-white/30 border-t-white rounded-full animate-spin" />
+              ) : (
+                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
+                    d="M19 7l-.867 12.142A2 2 0 0116.138 21H7.862a2 2 0 01-1.995-1.858L5 7m5 4v6m4-6v6m1-10V4a1 1 0 00-1-1h-4a1 1 0 00-1 1v3M4 7h16" />
+                </svg>
+              )}
+              {confirmDelete ? "Confirm delete" : "Delete"}
+            </button>
+          )}
+
+          {/* Cancel confirm */}
+          {confirmDelete && (
+            <button
+              onClick={() => setConfirmDelete(false)}
+              className="text-zinc-500 hover:text-white text-sm px-3 py-2 transition-colors"
+            >
+              Cancel
+            </button>
+          )}
+
+          {/* Close */}
+          <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors p-1 ml-1">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
             </svg>
@@ -78,7 +138,7 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
         </div>
       </div>
 
-      {/* Image area */}
+      {/* Image */}
       <div className="flex-1 flex items-center justify-center relative px-12 min-h-0">
         {hasPrev && (
           <button onClick={onPrev} className="absolute left-2 text-zinc-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
@@ -87,7 +147,6 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
             </svg>
           </button>
         )}
-
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={photo.originalUrl}
@@ -95,7 +154,6 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
           className="max-h-full max-w-full object-contain rounded-lg"
           style={{ maxHeight: "calc(100vh - 120px)" }}
         />
-
         {hasNext && (
           <button onClick={onNext} className="absolute right-2 text-zinc-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">

@@ -170,8 +170,8 @@ export default function UploadClient({ secret }: { secret: string }) {
               </div>
             ))}
             {successCount > 0 && (
-              <a href="/" className="block text-center text-zinc-400 hover:text-white text-sm mt-4 transition-colors">
-                View gallery →
+              <a href={`/manage/${secret}`} className="block text-center text-zinc-400 hover:text-white text-sm mt-4 transition-colors">
+                View & manage gallery →
               </a>
             )}
           </div>
