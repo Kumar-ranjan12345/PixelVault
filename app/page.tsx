@@ -1,36 +1,10 @@
-import { listPhotos, type Photo } from "@/lib/imagekit";
+import { listPhotos } from "@/lib/imagekit";
 import GalleryGrid from "@/components/GalleryGrid";
 
 export const revalidate = 60; // refresh every 60s
 
-// Demo photos shown when ImageKit is not configured
-const DEMO_PHOTOS: Photo[] = Array.from({ length: 12 }, (_, i) => {
-  const ids = [10, 20, 30, 40, 50, 60, 70, 80, 90, 100, 110, 120];
-  const id = ids[i];
-  return {
-    key: `demo-${id}`,
-    originalUrl: `https://picsum.photos/id/${id}/1200/900`,
-    thumbnailUrl: `https://picsum.photos/id/${id}/600/450`,
-    name: `demo-photo-${id}.jpg`,
-    uploadedAt: new Date(Date.now() - i * 86400000),
-    size: 3.2 * 1024 * 1024,
-  };
-});
-
 export default async function GalleryPage() {
-  let photos: Photo[] = [];
-  let isDemo = false;
-
-  try {
-    photos = await listPhotos();
-    if (photos.length === 0) {
-      photos = DEMO_PHOTOS;
-      isDemo = true;
-    }
-  } catch {
-    photos = DEMO_PHOTOS;
-    isDemo = true;
-  }
+  let photos = await listPhotos().catch(() => []);
 
   return (
     <main className="min-h-screen bg-[#0c0c0c]">
@@ -38,20 +12,11 @@ export default async function GalleryPage() {
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
       {/* Header */}
-      <div className="px-5 pt-10 pb-6 max-w-7xl mx-auto flex items-end justify-between">
-        <div>
-          <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
-            Gallery
-          </h1>
-          <div className="flex items-center gap-3 mt-2">
-            <p className="text-zinc-500 text-sm">{photos.length} photos</p>
-            {isDemo && (
-              <span className="text-xs px-2 py-0.5 rounded-full bg-amber-500/10 text-amber-400 border border-amber-500/20">
-                Demo mode
-              </span>
-            )}
-          </div>
-        </div>
+      <div className="px-5 pt-10 pb-6 max-w-7xl mx-auto">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
+          Gallery
+        </h1>
+        <p className="text-zinc-500 text-sm mt-2">{photos.length} photos</p>
       </div>
 
       {/* Divider */}
@@ -59,12 +24,22 @@ export default async function GalleryPage() {
 
       {/* Grid */}
       <div className="px-4 pb-20 max-w-7xl mx-auto">
-        <GalleryGrid photos={photos} isDemo={isDemo} />
+        {photos.length === 0 ? (
+          <div className="flex flex-col items-center justify-center py-40 text-zinc-700">
+            <svg className="w-12 h-12 mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+                d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+            </svg>
+            <p className="text-sm tracking-wide">No photos yet</p>
+          </div>
+        ) : (
+          <GalleryGrid photos={photos} />
+        )}
       </div>
 
       {/* Footer */}
       <div className="text-center pb-8 text-zinc-700 text-xs tracking-widest uppercase">
-        {isDemo ? "Demo · Connect R2 to show your photos" : `${photos.length} photos`}
+        {photos.length} photos
       </div>
     </main>
   );

@@ -4,7 +4,7 @@ import { useState } from "react";
 import type { Photo } from "@/lib/imagekit";
 import Lightbox from "./Lightbox";
 
-export default function GalleryGrid({ photos, isDemo = false }: { photos: Photo[]; isDemo?: boolean }) {
+export default function GalleryGrid({ photos }: { photos: Photo[] }) {
   const [selected, setSelected] = useState<Photo | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
@@ -58,7 +58,6 @@ export default function GalleryGrid({ photos, isDemo = false }: { photos: Photo[
           onNext={next}
           hasPrev={photos.length > 1}
           hasNext={photos.length > 1}
-          isDemo={isDemo}
         />
       )}
     </>

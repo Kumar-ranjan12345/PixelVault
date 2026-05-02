@@ -10,13 +10,11 @@ interface Props {
   onNext: () => void;
   hasPrev: boolean;
   hasNext: boolean;
-  isDemo?: boolean;
 }
 
-export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext, isDemo = false }: Props) {
+export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext }: Props) {
   const [downloading, setDownloading] = useState(false);
 
-  // Close on Escape, navigate with arrow keys
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
       if (e.key === "Escape") onClose();
@@ -27,7 +25,6 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
     return () => window.removeEventListener("keydown", onKey);
   }, [onClose, onPrev, onNext]);
 
-  // Prevent body scroll
   useEffect(() => {
     document.body.style.overflow = "hidden";
     return () => { document.body.style.overflow = ""; };
@@ -58,33 +55,21 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
         <p className="text-zinc-400 text-sm truncate max-w-xs">{photo.name}</p>
         <div className="flex items-center gap-3">
-          {/* Download */}
-          {isDemo ? (
-            <span className="flex items-center gap-2 bg-zinc-800 text-zinc-500 text-sm font-medium px-4 py-2 rounded-full cursor-not-allowed" title="Connect R2 to enable downloads">
+          <button
+            onClick={handleDownload}
+            disabled={downloading}
+            className="flex items-center gap-2 bg-white text-black text-sm font-medium px-4 py-2 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-50"
+          >
+            {downloading ? (
+              <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+            ) : (
               <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
                 <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
                   d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
               </svg>
-              Demo
-            </span>
-          ) : (
-            <button
-              onClick={handleDownload}
-              disabled={downloading}
-              className="flex items-center gap-2 bg-white text-black text-sm font-medium px-4 py-2 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-50"
-            >
-              {downloading ? (
-                <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
-              ) : (
-                <svg className="w-4 h-4" fill="none" stroke="currentColor" viewBox="0 0 24 24">
-                  <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2}
-                    d="M4 16v1a3 3 0 003 3h10a3 3 0 003-3v-1m-4-4l-4 4m0 0l-4-4m4 4V4" />
-                </svg>
-              )}
-              Download
-            </button>
-          )}
-          {/* Close */}
+            )}
+            Download
+          </button>
           <button onClick={onClose} className="text-zinc-400 hover:text-white transition-colors p-1">
             <svg className="w-6 h-6" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M6 18L18 6M6 6l12 12" />
@@ -95,19 +80,14 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
 
       {/* Image area */}
       <div className="flex-1 flex items-center justify-center relative px-12 min-h-0">
-        {/* Prev */}
         {hasPrev && (
-          <button
-            onClick={onPrev}
-            className="absolute left-2 text-zinc-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10"
-          >
+          <button onClick={onPrev} className="absolute left-2 text-zinc-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M15 19l-7-7 7-7" />
             </svg>
           </button>
         )}
 
-        {/* Full-res image */}
         {/* eslint-disable-next-line @next/next/no-img-element */}
         <img
           src={photo.originalUrl}
@@ -116,12 +96,8 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
           style={{ maxHeight: "calc(100vh - 120px)" }}
         />
 
-        {/* Next */}
         {hasNext && (
-          <button
-            onClick={onNext}
-            className="absolute right-2 text-zinc-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10"
-          >
+          <button onClick={onNext} className="absolute right-2 text-zinc-400 hover:text-white transition-colors p-2 rounded-full hover:bg-white/10">
             <svg className="w-7 h-7" fill="none" stroke="currentColor" viewBox="0 0 24 24">
               <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M9 5l7 7-7 7" />
             </svg>
@@ -129,7 +105,6 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
         )}
       </div>
 
-      {/* Bottom info */}
       <div className="px-4 py-3 flex-shrink-0 text-center">
         <p className="text-zinc-600 text-xs">
           {(photo.size / (1024 * 1024)).toFixed(1)} MB · {new Date(photo.uploadedAt).toLocaleDateString()}
