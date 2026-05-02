@@ -18,18 +18,23 @@ body {
 .masonry {
   columns: 2;
   column-gap: 6px;
+  width: 100%;
 }
 
-@media (min-width: 640px) {
-  .masonry { columns: 3; column-gap: 8px; }
+@media (min-width: 480px) {
+  .masonry { columns: 3; }
+}
+
+@media (min-width: 768px) {
+  .masonry { columns: 4; }
 }
 
 @media (min-width: 1024px) {
-  .masonry { columns: 4; column-gap: 10px; }
+  .masonry { columns: 5; }
 }
 
-@media (min-width: 1280px) {
-  .masonry { columns: 5; column-gap: 10px; }
+@media (min-width: 1400px) {
+  .masonry { columns: 6; }
 }
 
 .masonry-item {

@@ -40,7 +40,7 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
 
   return (
     <>
-      <div className="masonry">
+      <div className="masonry w-full">
         {photos.map((photo, i) => (
           <div
             key={photo.key}
