@@ -1,0 +1,71 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+* {
+  box-sizing: border-box;
+}
+
+body {
+  background-color: #0c0c0c;
+  color: #f0f0f0;
+  font-family: var(--font-inter), -apple-system, BlinkMacSystemFont, sans-serif;
+  /* subtle grain */
+  background-image: url("data:image/svg+xml,%3Csvg viewBox='0 0 256 256' xmlns='http://www.w3.org/2000/svg'%3E%3Cfilter id='noise'%3E%3CfeTurbulence type='fractalNoise' baseFrequency='0.9' numOctaves='4' stitchTiles='stitch'/%3E%3C/filter%3E%3Crect width='100%25' height='100%25' filter='url(%23noise)' opacity='0.035'/%3E%3C/svg%3E");
+}
+
+/* Masonry grid */
+.masonry {
+  columns: 2;
+  column-gap: 6px;
+}
+
+@media (min-width: 640px) {
+  .masonry { columns: 3; column-gap: 8px; }
+}
+
+@media (min-width: 1024px) {
+  .masonry { columns: 4; column-gap: 10px; }
+}
+
+@media (min-width: 1280px) {
+  .masonry { columns: 5; column-gap: 10px; }
+}
+
+.masonry-item {
+  break-inside: avoid;
+  margin-bottom: 6px;
+}
+
+@media (min-width: 640px) {
+  .masonry-item { margin-bottom: 8px; }
+}
+
+@media (min-width: 1024px) {
+  .masonry-item { margin-bottom: 10px; }
+}
+
+/* Photo fade-in on load */
+.photo-img {
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.photo-img.loaded {
+  opacity: 1;
+}
+
+/* Lightbox */
+.lightbox-overlay {
+  animation: fadeIn 0.2s ease;
+}
+
+@keyframes fadeIn {
+  from { opacity: 0; }
+  to   { opacity: 1; }
+}
+
+/* Playfair for headings */
+.font-display {
+  font-family: var(--font-playfair), Georgia, serif;
+}

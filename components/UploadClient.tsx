@@ -1,0 +1,163 @@
+"use client";
+
+import { useState, useRef } from "react";
+
+interface UploadResult {
+  name: string;
+  success?: boolean;
+  error?: string;
+  key?: string;
+}
+
+export default function UploadClient({ secret }: { secret: string }) {
+  const [files, setFiles] = useState<File[]>([]);
+  const [uploading, setUploading] = useState(false);
+  const [results, setResults] = useState<UploadResult[]>([]);
+  const [dragOver, setDragOver] = useState(false);
+  const inputRef = useRef<HTMLInputElement>(null);
+
+  function onFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    if (e.target.files) {
+      setFiles(Array.from(e.target.files));
+      setResults([]);
+    }
+  }
+
+  function onDrop(e: React.DragEvent) {
+    e.preventDefault();
+    setDragOver(false);
+    const dropped = Array.from(e.dataTransfer.files).filter(f => f.type.startsWith("image/"));
+    setFiles(dropped);
+    setResults([]);
+  }
+
+  async function upload() {
+    if (!files.length) return;
+    setUploading(true);
+    setResults([]);
+
+    // Upload in batches of 5
+    const batchSize = 5;
+    const allResults: UploadResult[] = [];
+
+    for (let i = 0; i < files.length; i += batchSize) {
+      const batch = files.slice(i, i + batchSize);
+      const formData = new FormData();
+      batch.forEach(f => formData.append("files", f));
+
+      const res = await fetch(`/api/upload?secret=${secret}`, {
+        method: "POST",
+        body: formData,
+      });
+      const data = await res.json();
+      allResults.push(...(data.results ?? []));
+    }
+
+    setResults(allResults);
+    setFiles([]);
+    setUploading(false);
+    if (inputRef.current) inputRef.current.value = "";
+  }
+
+  const successCount = results.filter(r => r.success).length;
+  const errorCount = results.filter(r => r.error).length;
+
+  return (
+    <main className="min-h-screen bg-[#0a0a0a] flex flex-col items-center justify-start px-4 py-12">
+      <div className="w-full max-w-lg">
+        <h1 className="font-display text-3xl font-bold text-white mb-1">Upload Photos</h1>
+        <p className="text-zinc-500 text-sm mb-8">Originals are stored at full quality. Thumbnails are auto-generated.</p>
+
+        {/* Drop zone */}
+        <div
+          className={`border-2 border-dashed rounded-2xl p-10 text-center cursor-pointer transition-colors ${
+            dragOver ? "border-white bg-white/5" : "border-zinc-700 hover:border-zinc-500"
+          }`}
+          onClick={() => inputRef.current?.click()}
+          onDragOver={(e) => { e.preventDefault(); setDragOver(true); }}
+          onDragLeave={() => setDragOver(false)}
+          onDrop={onDrop}
+        >
+          <svg className="w-10 h-10 mx-auto mb-3 text-zinc-600" fill="none" stroke="currentColor" viewBox="0 0 24 24">
+            <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={1.5}
+              d="M4 16l4.586-4.586a2 2 0 012.828 0L16 16m-2-2l1.586-1.586a2 2 0 012.828 0L20 14m-6-6h.01M6 20h12a2 2 0 002-2V6a2 2 0 00-2-2H6a2 2 0 00-2 2v12a2 2 0 002 2z" />
+          </svg>
+          <p className="text-zinc-400 text-sm">
+            {files.length > 0
+              ? `${files.length} photo${files.length > 1 ? "s" : ""} selected`
+              : "Tap to select or drag photos here"}
+          </p>
+          <p className="text-zinc-600 text-xs mt-1">JPEG, PNG, WEBP, HEIC · max 50MB each</p>
+          <input
+            ref={inputRef}
+            type="file"
+            accept="image/*"
+            multiple
+            className="hidden"
+            onChange={onFileChange}
+            capture="environment" // opens camera on mobile
+          />
+        </div>
+
+        {/* Selected previews */}
+        {files.length > 0 && (
+          <div className="mt-4 grid grid-cols-4 gap-2">
+            {files.slice(0, 8).map((f, i) => (
+              <div key={i} className="aspect-square rounded-lg overflow-hidden bg-zinc-900">
+                {/* eslint-disable-next-line @next/next/no-img-element */}
+                <img
+                  src={URL.createObjectURL(f)}
+                  alt={f.name}
+                  className="w-full h-full object-cover"
+                />
+              </div>
+            ))}
+            {files.length > 8 && (
+              <div className="aspect-square rounded-lg bg-zinc-900 flex items-center justify-center text-zinc-500 text-sm">
+                +{files.length - 8}
+              </div>
+            )}
+          </div>
+        )}
+
+        {/* Upload button */}
+        <button
+          onClick={upload}
+          disabled={!files.length || uploading}
+          className="mt-6 w-full bg-white text-black font-semibold py-3 rounded-full hover:bg-zinc-200 transition-colors disabled:opacity-40 disabled:cursor-not-allowed flex items-center justify-center gap-2"
+        >
+          {uploading ? (
+            <>
+              <span className="w-4 h-4 border-2 border-black/30 border-t-black rounded-full animate-spin" />
+              Uploading...
+            </>
+          ) : (
+            `Upload ${files.length > 0 ? files.length + " " : ""}Photo${files.length !== 1 ? "s" : ""}`
+          )}
+        </button>
+
+        {/* Results */}
+        {results.length > 0 && (
+          <div className="mt-6 space-y-2">
+            {successCount > 0 && (
+              <div className="bg-green-950 border border-green-800 rounded-xl px-4 py-3 text-green-400 text-sm">
+                ✓ {successCount} photo{successCount > 1 ? "s" : ""} uploaded successfully
+              </div>
+            )}
+            {errorCount > 0 && (
+              <div className="bg-red-950 border border-red-800 rounded-xl px-4 py-3 text-red-400 text-sm">
+                ✗ {errorCount} failed — check file type or size
+              </div>
+            )}
+            <a
+              href="/"
+              className="block text-center text-zinc-400 hover:text-white text-sm mt-4 transition-colors"
+            >
+              View gallery →
+            </a>
+          </div>
+        )}
+      </div>
+    </main>
+  );
+}
