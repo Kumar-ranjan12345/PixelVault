@@ -16,13 +16,19 @@ const playfair = Playfair_Display({
 });
 
 export const metadata: Metadata = {
-  title: "Gallery",
-  description: "A personal photo gallery",
+  title: "PixelVault",
+  description: "A personal photo gallery by Kumar Ranjan",
+  icons: {
+    icon: "/favicon.svg",
+  },
 };
 
 export default function RootLayout({ children }: { children: React.ReactNode }) {
   return (
     <html lang="en" className={`${inter.variable} ${playfair.variable}`}>
+      <head>
+        <link rel="icon" type="image/svg+xml" href="/favicon.svg" />
+      </head>
       <body>{children}<Analytics /></body>
     </html>
   );

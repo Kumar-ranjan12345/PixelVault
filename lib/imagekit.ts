@@ -31,7 +31,7 @@ export async function listPhotos(): Promise<Photo[]> {
   return (files as any[]).map((file) => ({
     key: file.fileId,
     originalUrl: file.url,
-    thumbnailUrl: `${file.url}?tr=w-800,q-75,f-auto,l-text,i-© Kumar,fs-24,co-FFFFFF,a-bottom_right,lx-10,ly-10,l-end`,
+    thumbnailUrl: `${file.url}?tr=w-800,q-75,f-auto:l-text,i-©%20Kumar,fs-28,co-FFFFFF,bg-00000066,pa-6,lx-N10,ly-N10,lp-bottom_right:l-end`,
     name: file.name,
     uploadedAt: new Date(file.createdAt),
     size: file.size ?? 0,
