@@ -17,27 +17,6 @@ function getImageKit() {
   });
 }
 
-/** Build thumbnail URL with watermark using ImageKit SDK */
-function buildThumbnailUrl(ik: ImageKit, filePath: string): string {
-  return ik.url({
-    path: filePath,
-    transformation: [
-      { width: "800", quality: "75", format: "auto" },
-      {
-        overlay: "text",
-        overlayText: "© Kumar",
-        overlayTextFontSize: "28",
-        overlayTextColor: "FFFFFF",
-        overlayBackground: "00000055",
-        overlayX: "10",
-        overlayY: "10",
-        overlayTextEncoded: "false",
-        overlayGravity: "south_east",
-      },
-    ],
-  });
-}
-
 export async function listPhotos(): Promise<Photo[]> {
   const ik = getImageKit();
   const files = await ik.listFiles({
@@ -47,18 +26,12 @@ export async function listPhotos(): Promise<Photo[]> {
     limit: 500,
   });
 
-  return (files as any[]).map((file) => {
-    // Extract just the path after the endpoint
-    const endpoint = process.env.NEXT_PUBLIC_IMAGEKIT_URL_ENDPOINT!;
-    const filePath = file.url.replace(endpoint, "");
-
-    return {
-      key: file.fileId,
-      originalUrl: file.url,
-      thumbnailUrl: buildThumbnailUrl(ik, filePath),
-      name: file.name,
-      uploadedAt: new Date(file.createdAt),
-      size: file.size ?? 0,
-    };
-  });
+  return (files as any[]).map((file) => ({
+    key: file.fileId,
+    originalUrl: file.url,
+    thumbnailUrl: `${file.url}?tr=w-800,q-75`,
+    name: file.name,
+    uploadedAt: new Date(file.createdAt),
+    size: file.size ?? 0,
+  }));
 }
