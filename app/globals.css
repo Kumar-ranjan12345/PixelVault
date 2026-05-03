@@ -79,3 +79,8 @@ body {
 .font-display {
   font-family: var(--font-playfair), Georgia, serif;
 }
+
+/* Dancing Script for signature */
+.font-script {
+  font-family: var(--font-dancing), cursive;
+}

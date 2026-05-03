@@ -34,9 +34,13 @@ export default async function GalleryPage() {
         )}
       </div>
 
-      <div className="text-center pb-8 text-zinc-700 text-xs tracking-widest uppercase">
-        {photos.length} photos
-      </div>
+      {/* Footer */}
+      <footer className="border-t border-zinc-800/60 mt-4 px-6 py-10">
+        <div className="flex flex-col items-center gap-2">
+          <span className="font-script text-3xl text-zinc-300">Kumar Ranjan</span>
+          <span className="text-zinc-700 text-xs tracking-widest uppercase">{photos.length} photos · © {new Date().getFullYear()}</span>
+        </div>
+      </footer>
     </main>
   );
 }
