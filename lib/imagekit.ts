@@ -29,7 +29,7 @@ export async function listPhotos(): Promise<Photo[]> {
   return (files as any[]).map((file) => ({
     key: file.fileId,
     originalUrl: file.url,
-    thumbnailUrl: file.url,
+    thumbnailUrl: `${file.url}&tr=f-auto,w-800,q-80`,
     name: file.name,
     uploadedAt: new Date(file.createdAt),
     size: file.size ?? 0,
