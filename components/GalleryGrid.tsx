@@ -44,7 +44,7 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
         {photos.map((photo, i) => (
           <div
             key={photo.key}
-            className="masonry-item group relative cursor-zoom-in overflow-hidden rounded-md bg-zinc-900 ring-1 ring-white/5"
+            className="masonry-item group relative cursor-zoom-in overflow-hidden rounded-xl bg-zinc-900 ring-1 ring-white/5"
             onClick={() => open(photo, i)}
           >
             {/* eslint-disable-next-line @next/next/no-img-element */}

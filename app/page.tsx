@@ -11,6 +11,7 @@ export default async function GalleryPage() {
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
       <div className="px-6 sm:px-12 pt-10 pb-6">
+        <p className="text-zinc-600 text-xs tracking-widest uppercase mb-2">PixelVault</p>
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
           Gallery
         </h1>
