@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import React from "react";
 import type { Photo } from "@/lib/imagekit";
 
 interface Props {
@@ -14,7 +15,7 @@ interface Props {
   onDeleted?: (key: string) => void;
 }
 
-export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext, isOwner, onDeleted }: Props) {
+export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext, isOwner, onDeleted }: Props): React.JSX.Element {
   const [downloading, setDownloading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
