@@ -48,8 +48,8 @@ export async function POST(req: NextRequest) {
 
       results.push({ name: file.name, fileId: response.fileId, url: response.url, success: true });
     } catch (err) {
-      results.push({ name: file.name, error: "Upload failed" });
-      console.error(err);
+      results.push({ name: file.name, error: `Upload failed: ${err instanceof Error ? err.message : String(err)}` });
+      console.error(`Upload failed for ${file.name}:`, err);
     }
   }
 
