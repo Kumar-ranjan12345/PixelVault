@@ -1,7 +1,7 @@
 import { NextRequest, NextResponse } from "next/server";
 import ImageKit from "imagekit";
 
-const MAX_SIZE = 50 * 1024 * 1024; // 50 MB
+const MAX_SIZE = 50 * 1024 * 1024;
 const ALLOWED_TYPES = ["image/jpeg", "image/png", "image/webp", "image/heic", "image/heif", "image/gif"];
 
 function getImageKit() {
@@ -15,29 +15,23 @@ function getImageKit() {
 export async function POST(req: NextRequest) {
   const formData = await req.formData();
   const files = formData.getAll("files") as File[];
+  const category = formData.get("category") as string || "";
+  const location = formData.get("location") as string || "";
 
-  if (!files.length) {
-    return NextResponse.json({ error: "No files provided" }, { status: 400 });
-  }
+  if (!files.length) return NextResponse.json({ error: "No files provided" }, { status: 400 });
 
   const ik = getImageKit();
   const results = [];
   const now = new Date();
   const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  // Count existing photos to continue numbering from where we left off
   const existing = await ik.listFiles({ path: "/gallery", fileType: "image", limit: 1000 });
   const startIndex = (existing as any[]).length + 1;
+
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
-    if (!ALLOWED_TYPES.includes(file.type)) {
-      results.push({ name: file.name, error: "Unsupported file type" });
-      continue;
-    }
-    if (file.size > MAX_SIZE) {
-      results.push({ name: file.name, error: "File too large (max 50MB)" });
-      continue;
-    }
+    if (!ALLOWED_TYPES.includes(file.type)) { results.push({ name: file.name, error: "Unsupported file type" }); continue; }
+    if (file.size > MAX_SIZE) { results.push({ name: file.name, error: "File too large (max 50MB)" }); continue; }
 
     try {
       const buffer = Buffer.from(await file.arrayBuffer());
@@ -49,6 +43,7 @@ export async function POST(req: NextRequest) {
         fileName: safeName,
         folder: "/gallery",
         useUniqueFileName: false,
+        customMetadata: { category, location },
       });
 
       results.push({ name: file.name, fileId: response.fileId, url: response.url, success: true });

@@ -1,5 +1,8 @@
 import ImageKit from "imagekit";
 
+export const CATEGORIES = ["All", "Travel", "Architecture", "Nature", "Street", "Food", "Other"] as const;
+export type Category = typeof CATEGORIES[number];
+
 export interface Photo {
   key: string;
   originalUrl: string;
@@ -7,6 +10,8 @@ export interface Photo {
   name: string;
   uploadedAt: Date;
   size: number;
+  category?: string;
+  location?: string;
 }
 
 function getImageKit() {
@@ -33,5 +38,7 @@ export async function listPhotos(): Promise<Photo[]> {
     name: file.name,
     uploadedAt: new Date(file.createdAt),
     size: file.size ?? 0,
+    category: file.customMetadata?.category || "",
+    location: file.customMetadata?.location || "",
   }));
 }

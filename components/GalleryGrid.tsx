@@ -2,37 +2,47 @@
 
 import { useState } from "react";
 import type { Photo } from "@/lib/imagekit";
+import { CATEGORIES } from "@/lib/imagekit";
 import Lightbox from "./Lightbox";
 
 const PAGE_SIZE = 12;
 
 export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: { photos: Photo[]; isOwner?: boolean }) {
   const [photos, setPhotos] = useState(initialPhotos);
+  const [activeCategory, setActiveCategory] = useState("All");
   const [page, setPage] = useState(1);
   const [selected, setSelected] = useState<Photo | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  const totalPages = Math.ceil(photos.length / PAGE_SIZE);
-  const paged = photos.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+  // Filter by category
+  const filtered = activeCategory === "All"
+    ? photos
+    : photos.filter(p => p.category === activeCategory);
+
+  const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
+  const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
+
+  // Only show categories that have photos
+  const usedCategories = CATEGORIES.filter(c =>
+    c === "All" || photos.some(p => p.category === c)
+  );
 
   function open(photo: Photo, index: number) {
-    // index relative to full array for lightbox prev/next
-    const globalIndex = (page - 1) * PAGE_SIZE + index;
+    const globalIndex = filtered.indexOf(paged[index]);
     setSelected(photo);
     setSelectedIndex(globalIndex);
   }
 
   function prev() {
-    const i = (selectedIndex - 1 + photos.length) % photos.length;
-    setSelected(photos[i]);
+    const i = (selectedIndex - 1 + filtered.length) % filtered.length;
+    setSelected(filtered[i]);
     setSelectedIndex(i);
-    // switch page if needed
     setPage(Math.floor(i / PAGE_SIZE) + 1);
   }
 
   function next() {
-    const i = (selectedIndex + 1) % photos.length;
-    setSelected(photos[i]);
+    const i = (selectedIndex + 1) % filtered.length;
+    setSelected(filtered[i]);
     setSelectedIndex(i);
     setPage(Math.floor(i / PAGE_SIZE) + 1);
   }
@@ -40,13 +50,7 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
   function onDeleted(key: string) {
     const updated = photos.filter(p => p.key !== key);
     setPhotos(updated);
-    if (updated.length === 0) {
-      setSelected(null);
-    } else {
-      const newIndex = Math.min(selectedIndex, updated.length - 1);
-      setSelected(updated[newIndex]);
-      setSelectedIndex(newIndex);
-    }
+    setSelected(null);
   }
 
   function goToPage(p: number) {
@@ -54,8 +58,37 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
     window.scrollTo({ top: 0, behavior: "smooth" });
   }
 
+  function changeCategory(cat: string) {
+    setActiveCategory(cat);
+    setPage(1);
+  }
+
   return (
     <>
+      {/* Category filters */}
+      {usedCategories.length > 1 && (
+        <div className="flex flex-wrap gap-2 mb-8">
+          {usedCategories.map(cat => (
+            <button
+              key={cat}
+              onClick={() => changeCategory(cat)}
+              className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
+                activeCategory === cat
+                  ? "bg-white text-black font-medium"
+                  : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
+              }`}
+            >
+              {cat}
+              {cat !== "All" && (
+                <span className="ml-1.5 text-xs opacity-50">
+                  {photos.filter(p => p.category === cat).length}
+                </span>
+              )}
+            </button>
+          ))}
+        </div>
+      )}
+
       {/* Grid */}
       <div className="masonry w-full">
         {paged.map((photo, i) => (
@@ -71,46 +104,45 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
               loading="lazy"
               className="w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
-            <div className="absolute inset-0 bg-gradient-to-t from-black/50 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-              <p className="text-white/80 text-xs truncate font-light tracking-wide">{photo.name}</p>
+            {/* Hover overlay — shows location if available */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
+              {photo.location ? (
+                <div className="flex items-center gap-1">
+                  <svg className="w-3 h-3 text-white/70 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
+                    <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
+                  </svg>
+                  <p className="text-white/80 text-xs font-light tracking-wide">{photo.location}</p>
+                </div>
+              ) : (
+                <p className="text-white/50 text-xs font-light tracking-wide">{photo.name}</p>
+              )}
             </div>
           </div>
         ))}
       </div>
 
+      {/* Empty state for filtered */}
+      {paged.length === 0 && (
+        <div className="text-center py-20 text-zinc-600 text-sm">No photos in this category yet</div>
+      )}
+
       {/* Pagination */}
       {totalPages > 1 && (
         <div className="flex items-center justify-center gap-2 mt-12 mb-4">
-          {/* Prev */}
-          <button
-            onClick={() => goToPage(page - 1)}
-            disabled={page === 1}
-            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
+          <button onClick={() => goToPage(page - 1)} disabled={page === 1}
+            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
             ← Prev
           </button>
-
-          {/* Page numbers */}
           {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-            <button
-              key={p}
-              onClick={() => goToPage(p)}
+            <button key={p} onClick={() => goToPage(p)}
               className={`w-9 h-9 rounded-full text-sm font-medium transition-colors ${
-                p === page
-                  ? "bg-white text-black"
-                  : "text-zinc-500 hover:text-white border border-zinc-800 hover:border-zinc-600"
-              }`}
-            >
+                p === page ? "bg-white text-black" : "text-zinc-500 hover:text-white border border-zinc-800 hover:border-zinc-600"
+              }`}>
               {p}
             </button>
           ))}
-
-          {/* Next */}
-          <button
-            onClick={() => goToPage(page + 1)}
-            disabled={page === totalPages}
-            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
-          >
+          <button onClick={() => goToPage(page + 1)} disabled={page === totalPages}
+            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
             Next →
           </button>
         </div>
@@ -122,8 +154,8 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
           onClose={() => setSelected(null)}
           onPrev={prev}
           onNext={next}
-          hasPrev={photos.length > 1}
-          hasNext={photos.length > 1}
+          hasPrev={filtered.length > 1}
+          hasNext={filtered.length > 1}
           isOwner={isOwner}
           onDeleted={onDeleted}
         />
