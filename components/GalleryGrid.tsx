@@ -104,18 +104,22 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
               loading="lazy"
               className="w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
             />
-            {/* Hover overlay — shows location if available */}
-            <div className="absolute inset-0 bg-gradient-to-t from-black/60 via-transparent to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex items-end p-3">
-              {photo.location ? (
+            {/* Hover overlay — shows location, category, name */}
+            <div className="absolute inset-0 bg-gradient-to-t from-black/70 via-black/20 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-3 gap-0.5">
+              {photo.location && (
                 <div className="flex items-center gap-1">
                   <svg className="w-3 h-3 text-white/70 flex-shrink-0" fill="currentColor" viewBox="0 0 20 20">
                     <path fillRule="evenodd" d="M5.05 4.05a7 7 0 119.9 9.9L10 18.9l-4.95-4.95a7 7 0 010-9.9zM10 11a2 2 0 100-4 2 2 0 000 4z" clipRule="evenodd" />
                   </svg>
-                  <p className="text-white/80 text-xs font-light tracking-wide">{photo.location}</p>
+                  <p className="text-white/80 text-xs font-light tracking-wide truncate">{photo.location}</p>
                 </div>
-              ) : (
-                <p className="text-white/50 text-xs font-light tracking-wide">{photo.name}</p>
               )}
+              {photo.category && (
+                <span className="self-start px-2 py-0.5 rounded-full text-xs bg-white/20 text-white/90 backdrop-blur-sm">
+                  {photo.category}
+                </span>
+              )}
+              <p className="text-white/50 text-xs font-light truncate">{photo.name}</p>
             </div>
           </div>
         ))}
