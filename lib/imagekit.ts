@@ -31,14 +31,20 @@ export async function listPhotos(): Promise<Photo[]> {
     limit: 500,
   });
 
-  return (files as any[]).map((file) => ({
-    key: file.fileId,
-    originalUrl: file.url,
-    thumbnailUrl: `${file.url}&tr=f-auto,w-800,q-80`,
-    name: file.name,
-    uploadedAt: new Date(file.createdAt),
-    size: file.size ?? 0,
-    category: file.customMetadata?.category || "",
-    location: file.customMetadata?.location || "",
-  }));
+  return (files as any[]).map((file) => {
+    const tags: string[] = file.tags ?? [];
+    // First tag = category, second tag = location
+    const category = tags[0] || "";
+    const location = tags[1] || "";
+    return {
+      key: file.fileId,
+      originalUrl: file.url,
+      thumbnailUrl: `${file.url}&tr=f-auto,w-800,q-80`,
+      name: file.name,
+      uploadedAt: new Date(file.createdAt),
+      size: file.size ?? 0,
+      category,
+      location,
+    };
+  });
 }

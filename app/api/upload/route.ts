@@ -43,7 +43,7 @@ export async function POST(req: NextRequest) {
         fileName: safeName,
         folder: "/gallery",
         useUniqueFileName: false,
-        customMetadata: { category, location },
+        tags: [category, location].filter(Boolean),
       });
 
       results.push({ name: file.name, fileId: response.fileId, url: response.url, success: true });
