@@ -25,8 +25,14 @@ export async function POST(req: NextRequest) {
   const now = new Date();
   const dateStr = `${now.getFullYear()}-${String(now.getMonth() + 1).padStart(2, "0")}-${String(now.getDate()).padStart(2, "0")}`;
 
-  const existing = await ik.listFiles({ path: "/gallery", fileType: "image", limit: 1000 });
-  const startIndex = (existing as any[]).length + 1;
+  // Find highest IMG number across all existing files to continue from there
+  const existing = await ik.listFiles({ path: "/gallery", fileType: "image", limit: 1000 }) as any[];
+  let maxNum = 0;
+  for (const f of existing) {
+    const match = f.name?.match(/IMG_(\d+)/);
+    if (match) maxNum = Math.max(maxNum, parseInt(match[1]));
+  }
+  let nextNum = maxNum + 1;
 
   for (let i = 0; i < files.length; i++) {
     const file = files[i];
@@ -36,7 +42,7 @@ export async function POST(req: NextRequest) {
     try {
       const buffer = Buffer.from(await file.arrayBuffer());
       const ext = file.name.split(".").pop()?.toLowerCase() || "jpg";
-      const safeName = `${dateStr}-IMG_${startIndex + i}.${ext}`;
+      const safeName = `${dateStr}-IMG_${nextNum++}.${ext}`;
 
       const response = await ik.upload({
         file: buffer,
