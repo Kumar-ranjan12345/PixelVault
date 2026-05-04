@@ -1,7 +1,6 @@
 "use client";
 
 import { useEffect, useState } from "react";
-import React from "react";
 import type { Photo } from "@/lib/imagekit";
 
 interface Props {
@@ -15,7 +14,7 @@ interface Props {
   onDeleted?: (key: string) => void;
 }
 
-export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext, isOwner, onDeleted }: Props): React.JSX.Element {
+export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasNext, isOwner, onDeleted }: Props) {
   const [downloading, setDownloading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
@@ -35,7 +34,6 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  // Reset confirm when photo changes
   useEffect(() => { setConfirmDelete(false); }, [photo.key]);
 
   async function handleShare() {
@@ -47,6 +45,8 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
       alert("Link copied!");
     }
   }
+
+  async function handleDownload() {
     setDownloading(true);
     try {
       const res = await fetch(
@@ -88,7 +88,6 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
         <p className="text-zinc-400 text-sm truncate max-w-xs">{photo.name}</p>
         <div className="flex items-center gap-2">
 
-          {/* Download */}
           {/* Share */}
           <button
             onClick={handleShare}
@@ -119,15 +118,13 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
             </button>
           )}
 
-          {/* Delete (owner only) */}
+          {/* Delete — owner only */}
           {isOwner && (
             <button
               onClick={handleDelete}
               disabled={deleting}
               className={`flex items-center gap-2 text-sm font-medium px-4 py-2 rounded-full transition-colors disabled:opacity-50 ${
-                confirmDelete
-                  ? "bg-red-600 text-white hover:bg-red-700"
-                  : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
+                confirmDelete ? "bg-red-600 text-white hover:bg-red-700" : "bg-zinc-800 text-zinc-300 hover:bg-zinc-700"
               }`}
             >
               {deleting ? (
@@ -142,12 +139,8 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
             </button>
           )}
 
-          {/* Cancel confirm */}
           {confirmDelete && (
-            <button
-              onClick={() => setConfirmDelete(false)}
-              className="text-zinc-500 hover:text-white text-sm px-3 py-2 transition-colors"
-            >
+            <button onClick={() => setConfirmDelete(false)} className="text-zinc-500 hover:text-white text-sm px-3 py-2 transition-colors">
               Cancel
             </button>
           )}
