@@ -12,6 +12,7 @@ interface UploadResult {
 export default function UploadClient({ secret }: { secret: string }) {
   const [files, setFiles] = useState<File[]>([]);
   const [category, setCategory] = useState("Travel");
+  const [customCategory, setCustomCategory] = useState("");
   const [location, setLocation] = useState("");
   const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<UploadResult[]>([]);
@@ -54,7 +55,7 @@ export default function UploadClient({ secret }: { secret: string }) {
         const batch = files.slice(i, i + batchSize);
         const formData = new FormData();
         batch.forEach(f => formData.append("files", f));
-        formData.append("category", category);
+        formData.append("category", category === "Other" && customCategory ? customCategory : category);
         formData.append("location", location);
 
         const res = await fetch(`/api/upload?secret=${encodeURIComponent(secret)}`, {
@@ -81,6 +82,7 @@ export default function UploadClient({ secret }: { secret: string }) {
     setResults(allResults);
     setFiles([]);
     setLocation("");
+    setCustomCategory("");
     setUploading(false);
     if (inputRef.current) inputRef.current.value = "";
   }
@@ -145,7 +147,7 @@ export default function UploadClient({ secret }: { secret: string }) {
             {CATEGORIES.filter(c => c !== "All").map(c => (
               <button
                 key={c}
-                onClick={() => setCategory(c)}
+                onClick={() => { setCategory(c); }}
                 className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
                   category === c ? "bg-white text-black font-medium" : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
                 }`}
@@ -154,6 +156,15 @@ export default function UploadClient({ secret }: { secret: string }) {
               </button>
             ))}
           </div>
+          {/* Custom category input when Other is selected */}
+          {category === "Other" && (
+            <input
+              type="text"
+              placeholder="Type your category..."
+              onChange={e => setCustomCategory(e.target.value)}
+              className="mt-3 w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition-colors"
+            />
+          )}
         </div>
 
         {/* Location */}

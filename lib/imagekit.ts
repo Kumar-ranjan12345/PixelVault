@@ -1,6 +1,6 @@
 import ImageKit from "imagekit";
 
-export const CATEGORIES = ["All", "Travel", "Architecture", "Nature", "Street", "Food", "Other"] as const;
+export const CATEGORIES = ["All", "Travel", "Architecture", "Nature", "Street", "Food", "Wildlife", "Portrait", "Cityscape", "Sunset", "Beach", "Temple", "Festival", "Other"] as const;
 export type Category = typeof CATEGORIES[number];
 
 export interface Photo {
