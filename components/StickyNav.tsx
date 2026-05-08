@@ -21,6 +21,7 @@ export default function StickyNav({ photoCount }: Props) {
     <div
       className="sticky top-0 px-6 sm:px-10 py-4 flex items-center justify-between transition-all duration-300"
       style={{
+        zIndex: 50,
         background: scrolled ? "rgba(13, 11, 9, 0.55)" : "transparent",
         backdropFilter: scrolled ? "blur(24px) saturate(180%)" : "none",
         WebkitBackdropFilter: scrolled ? "blur(24px) saturate(180%)" : "none",
