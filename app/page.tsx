@@ -9,7 +9,7 @@ export default async function GalleryPage() {
   return (
     <main className="min-h-screen bg-[#0d0b09]">
       {/* Sticky nav */}
-      <div className="sticky top-0 z-40 bg-[#0d0b09]/90 backdrop-blur-md border-b border-zinc-800/60">
+      <div className="sticky top-0 bg-[#0d0b09]/90 backdrop-blur-md border-b border-zinc-800/60" style={{ zIndex: 100 }}>
         <div className="px-6 sm:px-10 py-4 flex items-center justify-between">
           <span className="text-white text-sm font-semibold tracking-[0.2em] uppercase">PixelVault</span>
           <span className="text-zinc-600 text-xs">{photos.length} photos</span>
