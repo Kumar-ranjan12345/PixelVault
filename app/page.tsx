@@ -7,7 +7,7 @@ export default async function GalleryPage() {
   const photos = await listPhotos().catch(() => []);
 
   return (
-    <main className="min-h-screen bg-[#0c0c0c]">
+    <main className="min-h-screen bg-[#0d0b09]">
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
       {/* Top nav bar */}

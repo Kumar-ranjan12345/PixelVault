@@ -66,7 +66,7 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
               onClick={() => changeCategory(cat)}
               className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm transition-colors ${
                 activeCategory === cat
-                  ? "bg-white text-black font-medium"
+                  ? "bg-amber-500 text-black font-medium border border-amber-500"
                   : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
               }`}
             >
@@ -132,37 +132,33 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
         <div className="text-center py-20 text-zinc-600 text-sm">No photos in this category yet</div>
       )}
 
-      {/* Dot pagination */}
+      {/* Numbered pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-4 mt-12 mb-4">
+        <div className="flex items-center justify-center gap-2 mt-12 mb-4">
           <button
             onClick={() => goToPage(page - 1)}
             disabled={page === 1}
-            className="text-zinc-600 hover:text-white transition-colors disabled:opacity-20 text-sm tracking-widest"
+            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            ←
+            ← Prev
           </button>
-
-          <div className="flex items-center gap-2">
-            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-              <button
-                key={p}
-                onClick={() => goToPage(p)}
-                className={`rounded-full transition-all duration-300 ${
-                  p === page
-                    ? "w-6 h-2 bg-white"
-                    : "w-2 h-2 bg-zinc-600 hover:bg-zinc-400"
-                }`}
-              />
-            ))}
-          </div>
-
+          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+            <button
+              key={p}
+              onClick={() => goToPage(p)}
+              className={`w-9 h-9 rounded-full text-sm font-medium transition-colors ${
+                p === page ? "bg-amber-500 text-black border border-amber-500" : "text-zinc-500 hover:text-white border border-zinc-800 hover:border-zinc-600"
+              }`}
+            >
+              {p}
+            </button>
+          ))}
           <button
             onClick={() => goToPage(page + 1)}
             disabled={page === totalPages}
-            className="text-zinc-600 hover:text-white transition-colors disabled:opacity-20 text-sm tracking-widest"
+            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed"
           >
-            →
+            Next →
           </button>
         </div>
       )}
