@@ -10,12 +10,12 @@ export default async function GalleryPage() {
     <main className="min-h-screen bg-[#0c0c0c]">
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
-      <div className="px-6 sm:px-12 pt-10 pb-6">
-        <p className="text-zinc-600 text-xs tracking-widest uppercase mb-2">PixelVault</p>
-        <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
+      <div className="px-6 sm:px-12 pt-12 pb-6 text-center">
+        <p className="text-zinc-600 text-xs tracking-[0.3em] uppercase mb-3">PixelVault</p>
+        <h1 className="font-display text-5xl sm:text-7xl font-bold text-white tracking-tight leading-none">
           Gallery
         </h1>
-        <p className="text-zinc-500 text-sm mt-2">{photos.length} photos</p>
+        <p className="text-zinc-500 text-sm mt-3">{photos.length} photos</p>
       </div>
 
       <div className="mx-6 sm:mx-12 border-t border-zinc-800/60 mb-6" />
