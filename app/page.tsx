@@ -12,7 +12,7 @@ export default async function GalleryPage() {
 
       <div className="px-6 sm:px-12 pt-12 pb-6 text-center">
         <p className="text-zinc-600 text-xs tracking-[0.3em] uppercase mb-3">PixelVault</p>
-        <h1 className="font-display text-5xl sm:text-7xl font-bold text-white tracking-tight leading-none">
+        <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
           Gallery
         </h1>
         <p className="text-zinc-500 text-sm mt-3">{photos.length} photos</p>
