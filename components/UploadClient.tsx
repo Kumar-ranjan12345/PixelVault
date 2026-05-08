@@ -14,7 +14,6 @@ export default function UploadClient({ secret }: { secret: string }) {
   const [category, setCategory] = useState("Travel");
   const [customCategory, setCustomCategory] = useState("");
   const [location, setLocation] = useState("");
-  const [title, setTitle] = useState("");
   const [uploading, setUploading] = useState(false);
   const [results, setResults] = useState<UploadResult[]>([]);
   const [apiError, setApiError] = useState<string | null>(null);
@@ -58,7 +57,6 @@ export default function UploadClient({ secret }: { secret: string }) {
         batch.forEach(f => formData.append("files", f));
         formData.append("category", category === "Other" && customCategory ? customCategory : category);
         formData.append("location", location);
-        formData.append("title", title);
 
         const res = await fetch(`/api/upload?secret=${encodeURIComponent(secret)}`, {
           method: "POST",
@@ -84,7 +82,6 @@ export default function UploadClient({ secret }: { secret: string }) {
     setResults(allResults);
     setFiles([]);
     setLocation("");
-    setTitle("");
     setCustomCategory("");
     setUploading(false);
     if (inputRef.current) inputRef.current.value = "";
@@ -168,18 +165,6 @@ export default function UploadClient({ secret }: { secret: string }) {
               className="mt-3 w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition-colors"
             />
           )}
-        </div>
-
-        {/* Title */}
-        <div className="mt-5">
-          <p className="text-zinc-400 text-xs mb-2 uppercase tracking-wide">Photo Title <span className="text-zinc-600 normal-case">(optional)</span></p>
-          <input
-            type="text"
-            value={title}
-            onChange={e => setTitle(e.target.value)}
-            placeholder="e.g. Charminar at Dusk"
-            className="w-full bg-zinc-900 border border-zinc-700 rounded-xl px-4 py-3 text-white text-sm placeholder-zinc-600 focus:outline-none focus:border-zinc-500 transition-colors"
-          />
         </div>
 
         {/* Location */}

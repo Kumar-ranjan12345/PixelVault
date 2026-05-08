@@ -8,7 +8,6 @@ export interface Photo {
   originalUrl: string;
   thumbnailUrl: string;
   name: string;
-  title: string;
   uploadedAt: Date;
   size: number;
   category?: string;
@@ -34,16 +33,14 @@ export async function listPhotos(): Promise<Photo[]> {
 
   return (files as any[]).map((file) => {
     const tags: string[] = file.tags ?? [];
-    // tags: [category, location, title]
+    // First tag = category, second tag = location
     const category = tags[0] || "";
     const location = tags[1] || "";
-    const title = tags[2] || "";
     return {
       key: file.fileId,
       originalUrl: file.url,
       thumbnailUrl: `${file.url}&tr=f-auto,w-800,q-80`,
       name: file.name,
-      title,
       uploadedAt: new Date(file.createdAt),
       size: file.size ?? 0,
       category,

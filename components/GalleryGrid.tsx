@@ -84,7 +84,8 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
         {paged.map((photo, i) => (
           <div
             key={photo.key}
-            className="masonry-item group relative cursor-crosshair overflow-hidden rounded-xl bg-zinc-900 ring-1 ring-white/5"
+            className="masonry-item animate-fade-up group relative cursor-crosshair overflow-hidden rounded-xl bg-zinc-900 ring-1 ring-white/5"
+            style={{ animationDelay: `${i * 40}ms` }}
             onClick={() => open(photo, i)}
           >
             {/* Photo */}

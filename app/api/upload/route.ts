@@ -17,7 +17,6 @@ export async function POST(req: NextRequest) {
   const files = formData.getAll("files") as File[];
   const category = formData.get("category") as string || "";
   const location = formData.get("location") as string || "";
-  const title = formData.get("title") as string || "";
 
   if (!files.length) return NextResponse.json({ error: "No files provided" }, { status: 400 });
 
@@ -50,7 +49,7 @@ export async function POST(req: NextRequest) {
         fileName: safeName,
         folder: "/gallery",
         useUniqueFileName: false,
-        tags: [category, location, title].filter(Boolean),
+        tags: [category, location].filter(Boolean),
       });
 
       results.push({ name: file.name, fileId: response.fileId, url: response.url, success: true });
