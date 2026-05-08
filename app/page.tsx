@@ -11,6 +11,7 @@ export default async function GalleryPage() {
       {/* Sticky nav */}
       <div className="sticky top-0 bg-[#0d0b09] border-b border-zinc-800/60 px-6 sm:px-10 py-4 flex items-center justify-between">
         <span className="text-white text-sm font-semibold tracking-[0.2em] uppercase">PixelVault</span>
+        <span className="font-script text-xl text-zinc-300">Kumar&apos;s Photo Gallery</span>
         <span className="text-zinc-600 text-xs">{photos.length} photos</span>
       </div>
 
