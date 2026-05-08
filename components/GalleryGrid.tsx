@@ -67,8 +67,9 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
               className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm transition-colors ${
                 activeCategory === cat
                   ? "bg-amber-500 text-black font-medium border border-amber-500"
-                  : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
+                  : "text-zinc-400 hover:text-white border border-white/10 hover:border-white/20"
               }`}
+              style={activeCategory !== cat ? { background: "rgba(255,255,255,0.05)", backdropFilter: "blur(10px)", WebkitBackdropFilter: "blur(10px)" } : {}}
             >
               {cat}
               {cat !== "All" && (

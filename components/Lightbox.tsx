@@ -89,8 +89,8 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
       className="lightbox-overlay fixed inset-0 z-50 bg-black/95 flex flex-col"
       onClick={(e) => { if (e.target === e.currentTarget) { setConfirmDelete(false); onClose(); } }}
     >
-      {/* Top bar */}
-      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
+      <div className="flex items-center justify-between px-4 py-3 flex-shrink-0 border-b border-white/10"
+        style={{ background: "rgba(0,0,0,0.4)", backdropFilter: "blur(20px)", WebkitBackdropFilter: "blur(20px)" }}>
         <p className="text-zinc-400 text-sm truncate max-w-xs">{photo.title || photo.location || photo.name}</p>
         <div className="flex items-center gap-2">
 

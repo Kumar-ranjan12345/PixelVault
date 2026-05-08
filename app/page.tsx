@@ -1,5 +1,6 @@
 import { listPhotos } from "@/lib/imagekit";
 import GalleryGrid from "@/components/GalleryGrid";
+import StickyNav from "@/components/StickyNav";
 
 export const revalidate = 0;
 
@@ -8,12 +9,8 @@ export default async function GalleryPage() {
 
   return (
     <main className="min-h-screen bg-[#0d0b09]">
-      {/* Sticky nav */}
-      <div className="sticky top-0 bg-[#0d0b09] border-b border-zinc-800/60 px-6 sm:px-10 py-4 flex items-center justify-between">
-        <span className="text-white text-sm font-semibold tracking-[0.2em] uppercase">PixelVault</span>
-        <span className="font-script text-xl text-zinc-300">Kumar&apos;s Photo Gallery</span>
-        <span className="text-zinc-600 text-xs">{photos.length} photos</span>
-      </div>
+      {/* Sticky nav — glass effect */}
+      <StickyNav photoCount={photos.length} />
 
       {/* Centered Gallery heading */}
       <div className="text-center pt-10 pb-8">
