@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect, useState } from "react";
+import { createPortal } from "react-dom";
 import type { Photo } from "@/lib/imagekit";
 
 interface Props {
@@ -19,6 +20,9 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
   const [views, setViews] = useState<number | null>(null);
+  const [mounted, setMounted] = useState(false);
+
+  useEffect(() => { setMounted(true); }, []);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -57,9 +61,7 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
   async function handleDownload() {
     setDownloading(true);
     try {
-      const res = await fetch(
-        `/api/download?url=${encodeURIComponent(photo.originalUrl)}&name=${encodeURIComponent(photo.name)}`
-      );
+      const res = await fetch(`/api/download?url=${encodeURIComponent(photo.originalUrl)}&name=${encodeURIComponent(photo.name)}`);
       const { url } = await res.json();
       const a = document.createElement("a");
       a.href = url;
@@ -88,9 +90,10 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
 
   const displayTitle = photo.title || photo.location || photo.name;
 
-  return (
+  const content = (
     <div
-      className="lightbox-overlay fixed inset-0 z-50 bg-black/96 flex flex-col"
+      className="lightbox-overlay fixed inset-0 bg-black/96 flex flex-col"
+      style={{ zIndex: 9999 }}
       onClick={(e) => { if (e.target === e.currentTarget) { setConfirmDelete(false); onClose(); } }}
     >
       {/* Top bar */}
@@ -178,4 +181,7 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
       </div>
     </div>
   );
+
+  if (!mounted) return null;
+  return createPortal(content, document.body);
 }
