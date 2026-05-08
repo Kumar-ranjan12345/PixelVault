@@ -8,15 +8,11 @@ export default async function GalleryPage() {
 
   return (
     <main className="min-h-screen bg-[#0d0b09]">
-      <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
-
-      {/* Top nav bar */}
-      <div className="px-6 sm:px-10 py-4 flex items-center justify-between">
+      {/* Sticky nav */}
+      <div className="sticky top-0 bg-[#0d0b09] border-b border-zinc-800/60 px-6 sm:px-10 py-4 flex items-center justify-between">
         <span className="text-white text-sm font-semibold tracking-[0.2em] uppercase">PixelVault</span>
         <span className="text-zinc-600 text-xs">{photos.length} photos</span>
       </div>
-
-      <div className="mx-6 sm:mx-10 border-t border-zinc-800/60" />
 
       {/* Centered Gallery heading */}
       <div className="text-center pt-10 pb-8">

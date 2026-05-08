@@ -18,6 +18,7 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
   const [downloading, setDownloading] = useState(false);
   const [deleting, setDeleting] = useState(false);
   const [confirmDelete, setConfirmDelete] = useState(false);
+  const [views, setViews] = useState<number | null>(null);
 
   useEffect(() => {
     function onKey(e: KeyboardEvent) {
@@ -34,7 +35,12 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
     return () => { document.body.style.overflow = ""; };
   }, []);
 
-  useEffect(() => { setConfirmDelete(false); }, [photo.key]);
+  useEffect(() => {
+    setConfirmDelete(false);
+    setViews(null);
+    fetch(`/api/views?id=${encodeURIComponent(photo.key)}`, { method: "POST" })
+      .then(r => r.json()).then(d => setViews(d.views)).catch(() => {});
+  }, [photo.key]);
 
   async function handleShare() {
     const url = `${window.location.origin}?photo=${photo.key}`;
@@ -85,7 +91,7 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
     >
       {/* Top bar */}
       <div className="flex items-center justify-between px-4 py-3 flex-shrink-0">
-        <p className="text-zinc-400 text-sm truncate max-w-xs">{photo.name}</p>
+        <p className="text-zinc-400 text-sm truncate max-w-xs">{photo.title || photo.location || photo.name}</p>
         <div className="flex items-center gap-2">
 
           {/* Share */}
@@ -180,9 +186,10 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
       </div>
 
       <div className="px-4 py-3 flex-shrink-0 text-center">
-        <p className="text-zinc-600 text-xs">
-          {photo.location && <span className="text-zinc-500 mr-2">📍 {photo.location}</span>}
-          {(photo.size / (1024 * 1024)).toFixed(1)} MB · {new Date(photo.uploadedAt).toLocaleDateString()}
+        <p className="text-zinc-600 text-xs flex items-center justify-center gap-3">
+          {photo.location && <span className="text-zinc-500">📍 {photo.location}</span>}
+          {views !== null && <span>👁 {views} {views === 1 ? "view" : "views"}</span>}
+          <span>{(photo.size / (1024 * 1024)).toFixed(1)} MB</span>
         </p>
       </div>
     </div>
