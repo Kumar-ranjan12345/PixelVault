@@ -42,6 +42,50 @@ body {
   .masonry-item { margin-bottom: 16px; }
 }
 
+/* Page entrance animation */
+@keyframes fadeUp {
+  from { opacity: 0; transform: translateY(20px); }
+  to   { opacity: 1; transform: translateY(0); }
+}
+
+.animate-fade-up {
+  animation: fadeUp 0.5s ease forwards;
+  opacity: 0;
+}
+
+/* Blur placeholder */
+.photo-wrap {
+  position: relative;
+  overflow: hidden;
+}
+
+.photo-blur {
+  position: absolute;
+  inset: 0;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
+  filter: blur(12px);
+  transform: scale(1.1);
+  transition: opacity 0.4s ease;
+}
+
+.photo-main {
+  position: relative;
+  width: 100%;
+  opacity: 0;
+  transition: opacity 0.4s ease;
+}
+
+.photo-main.loaded {
+  opacity: 1;
+}
+
+.photo-main.loaded + .photo-blur,
+.photo-blur.hidden {
+  opacity: 0;
+}
+
 .masonry-item {
   break-inside: avoid;
   margin-bottom: 6px;
@@ -84,3 +128,7 @@ body {
 .font-script {
   font-family: var(--font-dancing), cursive;
 }
+
+/* Hide scrollbar for category filter row */
+.scrollbar-hide::-webkit-scrollbar { display: none; }
+.scrollbar-hide { -ms-overflow-style: none; scrollbar-width: none; }

@@ -14,18 +14,11 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
   const [selected, setSelected] = useState<Photo | null>(null);
   const [selectedIndex, setSelectedIndex] = useState(0);
 
-  // Filter by category
-  const filtered = activeCategory === "All"
-    ? photos
-    : photos.filter(p => p.category === activeCategory);
-
+  const filtered = activeCategory === "All" ? photos : photos.filter(p => p.category === activeCategory);
   const totalPages = Math.ceil(filtered.length / PAGE_SIZE);
   const paged = filtered.slice((page - 1) * PAGE_SIZE, page * PAGE_SIZE);
 
-  // Only show categories that have photos
-  const usedCategories = CATEGORIES.filter(c =>
-    c === "All" || photos.some(p => p.category === c)
-  );
+  const usedCategories = CATEGORIES.filter(c => c === "All" || photos.some(p => p.category === c));
 
   function open(photo: Photo, index: number) {
     const globalIndex = filtered.indexOf(paged[index]);
@@ -48,8 +41,7 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
   }
 
   function onDeleted(key: string) {
-    const updated = photos.filter(p => p.key !== key);
-    setPhotos(updated);
+    setPhotos(photos.filter(p => p.key !== key));
     setSelected(null);
   }
 
@@ -65,14 +57,14 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
 
   return (
     <>
-      {/* Category filters */}
+      {/* Category filters — horizontal scroll on mobile */}
       {usedCategories.length > 1 && (
-        <div className="flex flex-wrap gap-2 mb-8">
+        <div className="flex gap-2 mb-8 overflow-x-auto pb-1 scrollbar-hide">
           {usedCategories.map(cat => (
             <button
               key={cat}
               onClick={() => changeCategory(cat)}
-              className={`px-4 py-1.5 rounded-full text-sm transition-colors ${
+              className={`flex-shrink-0 px-4 py-1.5 rounded-full text-sm transition-colors ${
                 activeCategory === cat
                   ? "bg-white text-black font-medium"
                   : "border border-zinc-700 text-zinc-400 hover:border-zinc-500 hover:text-white"
@@ -80,31 +72,46 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
             >
               {cat}
               {cat !== "All" && (
-                <span className="ml-1.5 text-xs opacity-50">
-                  {photos.filter(p => p.category === cat).length}
-                </span>
+                <span className="ml-1.5 text-xs opacity-50">{photos.filter(p => p.category === cat).length}</span>
               )}
             </button>
           ))}
         </div>
       )}
 
-      {/* Grid */}
+      {/* Masonry grid with entrance animation */}
       <div className="masonry w-full">
         {paged.map((photo, i) => (
           <div
             key={photo.key}
-            className="masonry-item group relative cursor-zoom-in overflow-hidden rounded-xl bg-zinc-900 ring-1 ring-white/5"
+            className="masonry-item animate-fade-up group relative cursor-crosshair overflow-hidden rounded-xl bg-zinc-900 ring-1 ring-white/5"
+            style={{ animationDelay: `${i * 40}ms` }}
             onClick={() => open(photo, i)}
           >
-            {/* eslint-disable-next-line @next/next/no-img-element */}
-            <img
-              src={photo.thumbnailUrl}
-              alt={photo.name}
-              loading="lazy"
-              className="w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
-            />
-            {/* Hover overlay — shows location, category, name */}
+            {/* Blur placeholder */}
+            <div className="photo-wrap">
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={`${photo.thumbnailUrl.split('?')[0]}?tr=w-20,bl-10,q-30`}
+                alt=""
+                aria-hidden
+                className="photo-blur"
+              />
+              {/* eslint-disable-next-line @next/next/no-img-element */}
+              <img
+                src={photo.thumbnailUrl}
+                alt={photo.name}
+                loading="lazy"
+                className="photo-main transition-transform duration-500 group-hover:scale-[1.03]"
+                onLoad={(e) => {
+                  e.currentTarget.classList.add("loaded");
+                  const blur = e.currentTarget.nextElementSibling as HTMLElement;
+                  if (blur) blur.style.opacity = "0";
+                }}
+              />
+            </div>
+
+            {/* Hover overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 gap-1">
               {photo.location && (
                 <p className="font-script text-white text-lg leading-tight truncate drop-shadow-lg">
@@ -121,29 +128,41 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
         ))}
       </div>
 
-      {/* Empty state for filtered */}
       {paged.length === 0 && (
         <div className="text-center py-20 text-zinc-600 text-sm">No photos in this category yet</div>
       )}
 
-      {/* Pagination */}
+      {/* Dot pagination */}
       {totalPages > 1 && (
-        <div className="flex items-center justify-center gap-2 mt-12 mb-4">
-          <button onClick={() => goToPage(page - 1)} disabled={page === 1}
-            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-            ← Prev
+        <div className="flex items-center justify-center gap-4 mt-12 mb-4">
+          <button
+            onClick={() => goToPage(page - 1)}
+            disabled={page === 1}
+            className="text-zinc-600 hover:text-white transition-colors disabled:opacity-20 text-sm tracking-widest"
+          >
+            ←
           </button>
-          {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
-            <button key={p} onClick={() => goToPage(p)}
-              className={`w-9 h-9 rounded-full text-sm font-medium transition-colors ${
-                p === page ? "bg-white text-black" : "text-zinc-500 hover:text-white border border-zinc-800 hover:border-zinc-600"
-              }`}>
-              {p}
-            </button>
-          ))}
-          <button onClick={() => goToPage(page + 1)} disabled={page === totalPages}
-            className="px-4 py-2 rounded-full text-sm text-zinc-400 hover:text-white border border-zinc-800 hover:border-zinc-600 transition-colors disabled:opacity-30 disabled:cursor-not-allowed">
-            Next →
+
+          <div className="flex items-center gap-2">
+            {Array.from({ length: totalPages }, (_, i) => i + 1).map(p => (
+              <button
+                key={p}
+                onClick={() => goToPage(p)}
+                className={`rounded-full transition-all duration-300 ${
+                  p === page
+                    ? "w-6 h-2 bg-white"
+                    : "w-2 h-2 bg-zinc-600 hover:bg-zinc-400"
+                }`}
+              />
+            ))}
+          </div>
+
+          <button
+            onClick={() => goToPage(page + 1)}
+            disabled={page === totalPages}
+            className="text-zinc-600 hover:text-white transition-colors disabled:opacity-20 text-sm tracking-widest"
+          >
+            →
           </button>
         </div>
       )}

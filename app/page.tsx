@@ -10,17 +10,22 @@ export default async function GalleryPage() {
     <main className="min-h-screen bg-[#0c0c0c]">
       <div className="h-px bg-gradient-to-r from-transparent via-zinc-600 to-transparent" />
 
-      <div className="px-6 sm:px-12 pt-12 pb-6 text-center">
-        <p className="text-zinc-600 text-xs tracking-[0.3em] uppercase mb-3">PixelVault</p>
+      {/* Top nav bar */}
+      <div className="px-6 sm:px-10 py-4 flex items-center justify-between">
+        <span className="text-white text-sm font-semibold tracking-[0.2em] uppercase">PixelVault</span>
+        <span className="text-zinc-600 text-xs">{photos.length} photos</span>
+      </div>
+
+      <div className="mx-6 sm:mx-10 border-t border-zinc-800/60" />
+
+      {/* Centered Gallery heading */}
+      <div className="text-center pt-10 pb-8">
         <h1 className="font-display text-4xl sm:text-5xl font-bold text-white tracking-tight leading-none">
           Gallery
         </h1>
-        <p className="text-zinc-500 text-sm mt-3">{photos.length} photos</p>
       </div>
 
-      <div className="mx-6 sm:mx-12 border-t border-zinc-800/60 mb-6" />
-
-      <div className="px-4 sm:px-10 pb-20">
+      <div className="px-4 sm:px-10 pb-20 mt-2">
         {photos.length === 0 ? (
           <div className="flex flex-col items-center justify-center py-40 text-zinc-700">
             <svg className="w-12 h-12 mb-4 opacity-40" fill="none" stroke="currentColor" viewBox="0 0 24 24">
