@@ -2,6 +2,7 @@
 
 import { useEffect, useState } from "react";
 import type { Photo } from "@/lib/imagekit";
+import LikeButton from "./LikeButton";
 
 interface Props {
   photo: Photo;
@@ -105,7 +106,8 @@ export default function Lightbox({ photo, onClose, onPrev, onNext, hasPrev, hasN
             Share
           </button>
 
-          {/* Download — owner only */}
+          {/* Like */}
+          <LikeButton photoId={photo.key} size="md" showCount={true} />
           {isOwner && (
             <button
               onClick={handleDownload}

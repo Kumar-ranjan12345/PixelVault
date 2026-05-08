@@ -4,6 +4,7 @@ import { useState } from "react";
 import type { Photo } from "@/lib/imagekit";
 import { CATEGORIES } from "@/lib/imagekit";
 import Lightbox from "./Lightbox";
+import LikeButton from "./LikeButton";
 
 const PAGE_SIZE = 12;
 
@@ -100,6 +101,10 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
 
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 gap-1">
+              {/* Like button top-right */}
+              <div className="absolute top-3 right-3">
+                <LikeButton photoId={photo.key} size="sm" showCount={false} />
+              </div>
               {photo.location && (
                 <p className="font-script text-white text-lg leading-tight truncate drop-shadow-lg">
                   {photo.location}
