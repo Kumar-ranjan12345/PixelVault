@@ -88,28 +88,14 @@ export default function GalleryGrid({ photos: initialPhotos, isOwner = false }: 
             style={{ animationDelay: `${i * 40}ms` }}
             onClick={() => open(photo, i)}
           >
-            {/* Blur placeholder */}
-            <div className="photo-wrap">
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={`${photo.thumbnailUrl.split('?')[0]}?tr=w-20,bl-10,q-30`}
-                alt=""
-                aria-hidden
-                className="photo-blur"
-              />
-              {/* eslint-disable-next-line @next/next/no-img-element */}
-              <img
-                src={photo.thumbnailUrl}
-                alt={photo.name}
-                loading="lazy"
-                className="photo-main transition-transform duration-500 group-hover:scale-[1.03]"
-                onLoad={(e) => {
-                  e.currentTarget.classList.add("loaded");
-                  const blur = e.currentTarget.nextElementSibling as HTMLElement;
-                  if (blur) blur.style.opacity = "0";
-                }}
-              />
-            </div>
+            {/* Photo */}
+            {/* eslint-disable-next-line @next/next/no-img-element */}
+            <img
+              src={photo.thumbnailUrl}
+              alt={photo.name}
+              loading="lazy"
+              className="w-full object-cover transition-transform duration-500 group-hover:scale-[1.03]"
+            />
 
             {/* Hover overlay */}
             <div className="absolute inset-0 bg-gradient-to-t from-black/80 via-black/10 to-transparent opacity-0 group-hover:opacity-100 transition-opacity duration-300 flex flex-col justify-end p-4 gap-1">
